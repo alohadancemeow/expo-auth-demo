@@ -7,9 +7,14 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@prisma/react-native"
     ],
     "name": "expo-auth-demo",
-    "slug": "expo-auth-demo"
+    "slug": "expo-auth-demo",
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    }
   }
 }
