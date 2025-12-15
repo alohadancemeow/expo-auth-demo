@@ -20,6 +20,7 @@
     "@prisma/react-native": "6.0.1",
     "@react-navigation/native": "^7.1.25",
     "better-auth": "^1.4.7",
+    "better-sqlite3": "^12.5.0",
     "dotenv": "^17.2.3",
     "expo": "^54.0.29",
     "expo-constants": "^18.0.12",

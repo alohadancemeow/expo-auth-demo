@@ -47,6 +47,7 @@ export default function SignUp() {
       password,
       name,
     });
+
     if (signUpResponse.error) {
       setError(signUpResponse.error.message || "An error occurred during sign up");
       return;

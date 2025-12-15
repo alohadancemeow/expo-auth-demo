@@ -4,12 +4,11 @@ import * as SecureStore from "expo-secure-store";
 
 export const authClient = createAuthClient({
   baseURL: "http://localhost:8081",
-  disableDefaultFetchPlugins: true,
   plugins: [
     expoClient({
-      scheme: "exp",
+      scheme: "myapp",
       storagePrefix: "withbetterauth",
-      storage: SecureStore,
+      storage: SecureStore, // Uses SecureStore to persist tokens
     }),
   ],
 });
