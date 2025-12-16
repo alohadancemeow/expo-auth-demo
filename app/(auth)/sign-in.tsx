@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   View,
+  Platform,
 } from "react-native";
 import { authClient } from "@/lib/auth-client";
 import { Link, useRouter } from "expo-router";
@@ -20,25 +21,43 @@ export default function SignIn() {
 
   const router = useRouter();
 
-  const handleLogin = async () => {
-    setError(""); // Clear previous errors
+  const handleLogin = async (provider?: "google" | "github") => {
+    setError("");
 
-    if (!email || !password) {
-      setError("Please fill in all fields");
-      return;
+    if (!provider) {
+      if (!email || !password) {
+        setError("Please fill in all fields");
+        return;
+      }
+
+      try {
+        await authClient.signIn.email({
+          email,
+          password,
+        });
+
+      } catch (error) {
+        setError((error as unknown as any).message || "An error occurred during sign in");
+        return;
+      }
+
+      router.replace("/");
+    } else {
+
+      // social login
+      try {
+        await authClient.signIn.social({
+          provider,
+          callbackURL: Platform.OS === "web" ? window.location.origin : "myapp://",
+        });
+
+      } catch (error) {
+        setError((error as unknown as any).message || "An error occurred during sign in");
+        return;
+      }
+      router.replace("/");
     }
 
-    const signInResponse = await authClient.signIn.email({
-      email,
-      password,
-    });
-
-    if (signInResponse.error) {
-      setError(signInResponse.error.message || "An error occurred during sign in");
-      return;
-    }
-    // Usually redirect happens automatically or we can force it
-    router.replace("/");
   };
 
   return (
@@ -92,7 +111,7 @@ export default function SignIn() {
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
+          <TouchableOpacity style={styles.signInButton} onPress={() => handleLogin()}>
             <Text style={styles.signInButtonText}>Sign In</Text>
           </TouchableOpacity>
 
@@ -105,15 +124,14 @@ export default function SignIn() {
 
           {/* Social Buttons */}
           <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity style={styles.socialButton}>
-              {/* Google Icon Placeholder or use AntDesign google if available (it is usually 'google') */}
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleLogin("google")}>
               <AntDesign name="google" size={24} color="black" style={{ marginRight: 10 }} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.socialButton}>
-              <AntDesign name="apple" size={24} color="black" style={{ marginRight: 10 }} />
-              <Text style={styles.socialButtonText}>Apple</Text>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleLogin("github")}>
+              <AntDesign name="github" size={24} color="black" style={{ marginRight: 10 }} />
+              <Text style={styles.socialButtonText}>GitHub</Text>
             </TouchableOpacity>
           </View>
 

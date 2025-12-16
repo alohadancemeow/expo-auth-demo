@@ -20,8 +20,18 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  socialProviders: {
+    google: {
+      prompt: "select_account",
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
   plugins: [expo()],
-  socialProviders: {},
   trustedOrigins: [
     "myapp://",
 
@@ -31,7 +41,8 @@ export const auth = betterAuth({
       "exp://10.0.0.*:*/*",        // Trust 10.0.0.x IP range
       "exp://192.168.*.*:*/*",     // Trust 192.168.x.x IP range
       "exp://172.*.*.*:*/*",       // Trust 172.x.x.x IP range
-      "exp://localhost:*/*"        // Trust localhost
+      "exp://localhost:*/*",        // Trust localhost
+      "http://localhost:8081",      // Trust localhost
     ] : [])
   ],
   logger: {

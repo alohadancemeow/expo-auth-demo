@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   View,
+  Platform,
 } from "react-native";
 import { authClient } from "@/lib/auth-client";
 import { Link, useRouter } from "expo-router";
@@ -24,36 +25,54 @@ export default function SignUp() {
 
   const router = useRouter();
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (provider?: "google" | "github") => {
     setError("");
 
-    if (!email || !password || !name) {
-      setError("Please fill in all fields");
-      return;
-    }
+    if (!provider) {
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
 
-    if (!agreeTerms) {
-      setError("You must agree to the Terms of Service");
-      return;
-    }
+      if (!email || !password || !name) {
+        setError("Please fill in all fields");
+        return;
+      }
 
-    const signUpResponse = await authClient.signUp.email({
-      email,
-      password,
-      name,
-    });
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
 
-    if (signUpResponse.error) {
-      setError(signUpResponse.error.message || "An error occurred during sign up");
-      return;
+      if (!agreeTerms) {
+        setError("You must agree to the Terms of Service");
+        return;
+      }
+
+      try {
+        await authClient.signUp.email({
+          email,
+          password,
+          name,
+        });
+
+      } catch (error) {
+        setError((error as unknown as any).message || "An error occurred during sign in");
+        return;
+      }
+      router.replace("/");
+
+    } else {
+      // social login
+      try {
+        await authClient.signIn.social({
+          provider,
+          callbackURL: Platform.OS === "web" ? window.location.origin : "myapp://",
+        });
+
+      } catch (error) {
+        setError((error as unknown as any).message || "An error occurred during sign in");
+        return;
+      }
+      router.replace("/");
     }
-    // Navigate to sign in or home on success (depending on flow, usually auto-login or verify email)
-    router.replace("/");
   };
 
   return (
@@ -135,7 +154,7 @@ export default function SignUp() {
             </Text>
           </View>
 
-          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <TouchableOpacity style={styles.signUpButton} onPress={() => handleSignUp()}>
             <Text style={styles.signUpButtonText}>Sign Up</Text>
           </TouchableOpacity>
 
@@ -146,14 +165,14 @@ export default function SignUp() {
           </View>
 
           <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUp("google")}>
               <AntDesign name="google" size={24} color="black" style={{ marginRight: 10 }} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.socialButton}>
-              <AntDesign name="apple" size={24} color="black" style={{ marginRight: 10 }} />
-              <Text style={styles.socialButtonText}>Apple</Text>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUp("github")}>
+              <AntDesign name="github" size={24} color="black" style={{ marginRight: 10 }} />
+              <Text style={styles.socialButtonText}>GitHub</Text>
             </TouchableOpacity>
           </View>
 
