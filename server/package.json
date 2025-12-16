@@ -5,14 +5,15 @@
   "private": true,
   "scripts": {
     "start": "bun run index.ts",
-    "dev": "bun --watch index.ts",
+    "dev": "cross-env NODE_ENV=development bun --watch index.ts",
     "build": "bun build index.ts",
     "prisma:generate": "bunx prisma generate",
     "prisma:migrate": "bunx prisma migrate",
     "prisma:studio": "bunx prisma studio"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "cross-env": "^10.1.0"
   },
   "peerDependencies": {
     "typescript": "^5"

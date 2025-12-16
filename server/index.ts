@@ -12,6 +12,6 @@ const app = new Elysia()
         return auth.handler(request);
     })
     .get("/", () => "Elysia + Better Auth API running")
-    .listen(3000);
+    .listen({ port: 3000, hostname: '0.0.0.0' });
 
 console.log("🟢 Server running on http://localhost:3000");
