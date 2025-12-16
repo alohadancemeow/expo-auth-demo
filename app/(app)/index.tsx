@@ -1,6 +1,4 @@
 import {
-  Button,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -22,11 +20,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.headerSpacer} />
         <Text style={styles.headerTitle}>Welcome Home</Text>
-        <TouchableOpacity style={styles.settingsButton}>
-          <Ionicons name="settings-sharp" size={24} color="#999" />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
@@ -35,7 +29,7 @@ export default function HomeScreen() {
           <View style={styles.avatarContainer}>
             {/* Placeholder Avatar or User Image */}
             <Image
-              source={{ uri: user?.image || 'https://ui-avatars.com/api/?name=User&background=FDBA74&color=fff&size=128' }}
+              source={{ uri: user?.image || `https://ui-avatars.com/api/?name=${user?.name?.slice(0, 2) || 'UN'}&background=FDBA74&color=fff&size=128` }}
               style={styles.avatar}
             />
             {/* Overwrite with a nice illustration style if we had one, but using simple avatar for now */}
@@ -74,14 +68,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9F9F5', // Matching light/beige bg
   },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: 24,
     paddingVertical: 16,
-  },
-  headerSpacer: {
-    width: 24, // To balance the settings icon
+    marginVertical: 24,
   },
   headerTitle: {
     fontSize: 18,

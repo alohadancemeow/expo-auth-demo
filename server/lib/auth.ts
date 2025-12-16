@@ -1,14 +1,13 @@
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { betterAuth } from "better-auth";
 import { expo } from "@better-auth/expo";
-import { PrismaClient } from "@/prisma/generated/prisma/client";
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-
+import { PrismaClient } from "../prisma/generated/prisma";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 import path from 'path';
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL || `file:${path.join(process.cwd(), 'prisma/database.sqlite')}`
-})
+const adapter = new PrismaLibSql({
+  url: process.env.DATABASE_URL || `file:${path.join(process.cwd(), 'prisma/database.sqlite')}`,
+});
 
 const prisma = new PrismaClient({
   adapter,

@@ -58,7 +58,7 @@ export default function SignIn() {
         {/* Form */}
         <View style={styles.formContainer}>
           {error ? <View style={styles.errorContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
-          <Text style={styles.label}>Email or Username</Text>
+          <Text style={styles.label}>Email address</Text>
           <View style={styles.inputContainer}>
             <Ionicons name="mail" size={20} color="#888" style={styles.inputIcon} />
             <TextInput

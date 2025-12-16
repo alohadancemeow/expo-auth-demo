@@ -3,12 +3,14 @@ import { expoClient } from "@better-auth/expo/client";
 import * as SecureStore from "expo-secure-store";
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:8081",
+  baseURL: "http://localhost:3000",
+
   plugins: [
     expoClient({
       scheme: "myapp",
-      storagePrefix: "withbetterauth",
-      storage: SecureStore, // Uses SecureStore to persist tokens
+      storage: SecureStore,
+      storagePrefix: "auth",
     }),
   ],
 });
+
