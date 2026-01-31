@@ -2,8 +2,10 @@
   "expo": {
     "scheme": "myapp",
     "web": {
-      "bundler": "metro",
-      "output": "static"
+      "output": "server"
+    },
+    "extra": {
+      "AUTH_BASE_URL": ""
     },
     "plugins": [
       "expo-router",
@@ -12,10 +14,6 @@
       "@prisma/react-native"
     ],
     "name": "expo-auth-demo",
-    "slug": "expo-auth-demo",
-    "android": {
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
-    }
+    "slug": "expo-auth-demo"
   }
 }
