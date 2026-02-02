@@ -1,7 +1,6 @@
-
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/prisma"
+  output   = "../src/prisma/client"
 }
 
 datasource db {
@@ -39,8 +38,8 @@ model Account {
   createdAt             DateTime
   updatedAt             DateTime
 
-  @@map("account")
   @@index([userId])
+  @@map("account")
 }
 
 model Session {

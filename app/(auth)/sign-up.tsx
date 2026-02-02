@@ -8,7 +8,7 @@ import {
   View,
   Platform,
 } from "react-native";
-import { authClient } from "@/lib/auth-client";
+import { useAuth } from "../../lib/auth";
 import { Link, useRouter } from "expo-router";
 import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,57 +22,42 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [error, setError] = useState("");
-
+  const { signUp } = useAuth();
   const router = useRouter();
 
-  const handleSignUp = async (provider?: "google" | "github") => {
+  const handleSignUp = async () => {
     setError("");
 
-    if (!provider) {
-
-
-      if (!email || !password || !name) {
-        setError("Please fill in all fields");
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
-
-      if (!agreeTerms) {
-        setError("You must agree to the Terms of Service");
-        return;
-      }
-
-      try {
-        await authClient.signUp.email({
-          email,
-          password,
-          name,
-        });
-
-      } catch (error) {
-        setError((error as unknown as any).message || "An error occurred during sign in");
-        return;
-      }
-      router.replace("/");
-
-    } else {
-      // social login
-      try {
-        await authClient.signIn.social({
-          provider,
-          callbackURL: Platform.OS === "web" ? window.location.origin : "myapp://",
-        });
-
-      } catch (error) {
-        setError((error as unknown as any).message || "An error occurred during sign in");
-        return;
-      }
-      router.replace("/");
+    if (!email || !password || !name) {
+      setError("Please fill in all fields");
+      return;
     }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (!agreeTerms) {
+      setError("You must agree to the Terms of Service");
+      return;
+    }
+
+    try {
+      await signUp({
+        email,
+        password,
+        name,
+      });
+
+      router.replace("/(auth)/sign-in");
+    } catch (error) {
+      setError((error as unknown as any).message || "An error occurred during sign up");
+    }
+  };
+
+  const handleSocialLogin = (provider: "google" | "github") => {
+    // social login is not implemented in this version
   };
 
   return (
@@ -165,12 +150,12 @@ export default function SignUp() {
           </View>
 
           <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUp("google")}>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSocialLogin("google")}>
               <AntDesign name="google" size={24} color="black" style={{ marginRight: 10 }} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUp("github")}>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSocialLogin("github")}>
               <AntDesign name="github" size={24} color="black" style={{ marginRight: 10 }} />
               <Text style={styles.socialButtonText}>GitHub</Text>
             </TouchableOpacity>

@@ -5,17 +5,12 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { authClient } from "@/lib/auth-client";
+import { useAuth } from "../../lib/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, FontAwesome5, SimpleLineIcons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
-
-  const handleSignOut = async () => {
-    await authClient.signOut();
-  };
+  const { user, signOut } = useAuth();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -52,7 +47,7 @@ export default function HomeScreen() {
         <View style={{ flex: 1 }} />
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+        <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
           <SimpleLineIcons name="logout" size={18} color="black" style={{ marginRight: 10 }} />
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>

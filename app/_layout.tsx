@@ -1,19 +1,29 @@
-import { Stack } from "expo-router";
+import { Stack, Slot } from 'expo-router';
+import { AuthProvider, useAuth } from '../lib/auth';
+import { useEffect } from 'react';
+import { useRouter } from 'expo-router';
 
-import { authClient } from "@/lib/auth-client";
+const AppLayout = () => {
+  const { session, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (session) {
+        router.replace('/(app)');
+      } else {
+        router.replace('/(auth)/sign-in');
+      }
+    }
+  }, [session, loading, router]);
+
+  return <Slot />;
+};
 
 export default function RootLayout() {
-  const { data: session } = authClient.useSession();
-  const isAuthenticated = !!session;
-
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={isAuthenticated}>
-        <Stack.Screen name="(app)" />
-      </Stack.Protected>
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
-    </Stack>
+    <AuthProvider>
+      <AppLayout />
+    </AuthProvider>
   );
 }

@@ -8,7 +8,7 @@ import {
   View,
   Platform,
 } from "react-native";
-import { authClient } from "@/lib/auth-client";
+import { useAuth } from "../../lib/auth";
 import { Link, useRouter } from "expo-router";
 import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,47 +18,32 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-
+  const { signIn } = useAuth();
   const router = useRouter();
 
-  const handleLogin = async (provider?: "google" | "github") => {
+  const handleLogin = async () => {
     setError("");
 
-    if (!provider) {
-      if (!email || !password) {
-        setError("Please fill in all fields");
-        return;
-      }
-
-      try {
-        await authClient.signIn.email({
-          email,
-          password,
-        });
-
-      } catch (error) {
-        setError((error as unknown as any).message || "An error occurred during sign in");
-        return;
-      }
-
-      router.replace("/");
-    } else {
-
-      // social login
-      try {
-        await authClient.signIn.social({
-          provider,
-          callbackURL: Platform.OS === "web" ? window.location.origin : "myapp://",
-        });
-
-      } catch (error) {
-        setError((error as unknown as any).message || "An error occurred during sign in");
-        return;
-      }
-      router.replace("/");
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
     }
 
+    try {
+      await signIn({
+        email,
+        password,
+      });
+
+      router.replace("/");
+    } catch (error) {
+      setError((error as unknown as any).message || "An error occurred during sign in");
+    }
   };
+
+  const handleSocialLogin = (provider: "google" | "github") => {
+    // social login is not implemented in this version
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -124,12 +109,12 @@ export default function SignIn() {
 
           {/* Social Buttons */}
           <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity style={styles.socialButton} onPress={() => handleLogin("google")}>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSocialLogin("google")}>
               <AntDesign name="google" size={24} color="black" style={{ marginRight: 10 }} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.socialButton} onPress={() => handleLogin("github")}>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSocialLogin("github")}>
               <AntDesign name="github" size={24} color="black" style={{ marginRight: 10 }} />
               <Text style={styles.socialButtonText}>GitHub</Text>
             </TouchableOpacity>
