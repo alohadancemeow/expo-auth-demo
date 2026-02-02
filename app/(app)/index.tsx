@@ -5,12 +5,23 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { useAuth } from "../../lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, FontAwesome5, SimpleLineIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
-  const { user, signOut } = useAuth();
+  const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    router.replace("/(auth)/sign-in");
+  };
+
+  if (isPending) {
+    return <View><Text>Loading...</Text></View>;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,7 +35,7 @@ export default function HomeScreen() {
           <View style={styles.avatarContainer}>
             {/* Placeholder Avatar or User Image */}
             <Image
-              source={{ uri: user?.image || `https://ui-avatars.com/api/?name=${user?.name?.slice(0, 2) || 'UN'}&background=FDBA74&color=fff&size=128` }}
+              source={{ uri: session?.user?.image || `https://ui-avatars.com/api/?name=${session?.user?.name?.slice(0, 2) || 'UN'}&background=FDBA74&color=fff&size=128` }}
               style={styles.avatar}
             />
             {/* Overwrite with a nice illustration style if we had one, but using simple avatar for now */}
@@ -35,7 +46,7 @@ export default function HomeScreen() {
           </View>
 
           <Text style={styles.welcomeBack}>Welcome Back!</Text>
-          <Text style={styles.username}>@{user?.name || user?.email?.split('@')[0] || 'username'}</Text>
+          <Text style={styles.username}>@{session?.user?.name || session?.user?.email?.split('@')[0] || 'username'}</Text>
         </View>
 
         {/* Status Pill */}
@@ -47,7 +58,7 @@ export default function HomeScreen() {
         <View style={{ flex: 1 }} />
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <SimpleLineIcons name="logout" size={18} color="black" style={{ marginRight: 10 }} />
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>

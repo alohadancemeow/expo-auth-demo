@@ -6,9 +6,8 @@ import {
   Text,
   StyleSheet,
   View,
-  Platform,
 } from "react-native";
-import { useAuth } from "../../lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { Link, useRouter } from "expo-router";
 import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,7 +17,6 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const { signIn } = useAuth();
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -30,7 +28,7 @@ export default function SignIn() {
     }
 
     try {
-      await signIn({
+      await authClient.signIn.email({
         email,
         password,
       });
@@ -41,8 +39,18 @@ export default function SignIn() {
     }
   };
 
-  const handleSocialLogin = (provider: "google" | "github") => {
-    // social login is not implemented in this version
+  // social login 
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    try {
+      const res = await authClient.signIn.social({
+        provider,
+        callbackURL: "/",
+      });
+      console.log("Social sign in response:", res);
+    } catch (err) {
+      console.error("Social login error:", err);
+      setError("Failed to initiate social login");
+    }
   }
 
   return (
@@ -61,7 +69,12 @@ export default function SignIn() {
 
         {/* Form */}
         <View style={styles.formContainer}>
-          {error ? <View style={styles.errorContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+          {error ?
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+            : null
+          }
           <Text style={styles.label}>Email address</Text>
           <View style={styles.inputContainer}>
             <Ionicons name="mail" size={20} color="#888" style={styles.inputIcon} />

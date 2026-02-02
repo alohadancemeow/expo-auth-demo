@@ -6,9 +6,8 @@ import {
   Text,
   StyleSheet,
   View,
-  Platform,
 } from "react-native";
-import { useAuth } from "../../lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { Link, useRouter } from "expo-router";
 import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,7 +21,6 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [error, setError] = useState("");
-  const { signUp } = useAuth();
   const router = useRouter();
 
   const handleSignUp = async () => {
@@ -44,7 +42,7 @@ export default function SignUp() {
     }
 
     try {
-      await signUp({
+      await authClient.signUp.email({
         email,
         password,
         name,
@@ -56,8 +54,18 @@ export default function SignUp() {
     }
   };
 
-  const handleSocialLogin = (provider: "google" | "github") => {
-    // social login is not implemented in this version
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    try {
+      console.log("Initiating social sign in for:", provider);
+      const res = await authClient.signIn.social({
+        provider,
+        callbackURL: "/",
+      });
+      console.log("Social sign up response:", res);
+    } catch (err) {
+      console.error("Social signup error:", err);
+      setError("Failed to initiate social signup");
+    }
   };
 
   return (

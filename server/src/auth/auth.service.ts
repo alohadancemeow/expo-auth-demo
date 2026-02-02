@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { betterAuth } from 'better-auth';
+import { toNodeHandler } from 'better-auth/node';
 import { SignUpWithPasswordDto } from './dto/sign-up-with-password.dto';
 import { SignInWithPasswordDto } from './dto/sign-in-with-password.dto';
 import type { UserSession } from '@thallesp/nestjs-better-auth';
@@ -30,5 +31,9 @@ export class AuthService {
     return this.auth.api.getSession({
       headers: new Headers({ "Authorization": `Bearer ${session.session.token}` })
     });
+  }
+  
+  get handler() {
+    return toNodeHandler(this.auth);
   }
 }

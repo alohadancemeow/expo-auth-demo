@@ -2,9 +2,10 @@ import {
   Controller,
   Post,
   Body,
-  Get,
   UseGuards,
   Req,
+  All,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpWithPasswordDto } from './dto/sign-up-with-password.dto';
@@ -35,5 +36,12 @@ export class AuthController {
   @Post('signout')
   async signOut(@Req() req) {
     return this.authService.signOut(req.session.token);
+  }
+
+  @AllowAnonymous()
+  @All('*')
+  async handleAuth(@Req() req, @Res() res) {
+    console.log(`[AuthController] Catch-all route hit: ${req.method} ${req.originalUrl}`);
+    return this.authService.handler(req, res);
   }
 }
